@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sistema de Consulta de Calificaciones - Período 25-II</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .header .periodo {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: #64b5f6;
+            font-weight: 500;
+        }
+
+        .header .profesor {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 10px;
+        }
+
+        .search-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .search-panel h2 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #90caf9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        /* Estilos mejorados para select - compatibilidad iOS */
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 14px 40px 14px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            background-color: #fff;
+            color: #1a1a2e;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231a1a2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.3);
+        }
+
+        .form-group select:disabled {
+            background-color: #e0e0e0;
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .form-group select option {
+            padding: 12px;
+            font-size: 16px;
+            background: #fff;
+            color: #1a1a2e;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fff;
+            color: #1a1a2e;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.3);
+        }
+
+        .form-group input[type="text"]::placeholder {
+            color: #888;
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .student-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .student-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .student-avatar {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .student-info h3 {
+            font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .student-info p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .course-name {
+            background: rgba(100, 181, 246, 0.2);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #64b5f6;
+        }
+
+        .course-name span {
+            color: #90caf9;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .grades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .grade-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 18px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .grade-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .grade-card .label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .grade-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #64b5f6;
+        }
+
+        .grade-card .max {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .final-grade-section {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .final-grade-section.reprobado {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.15) 0%, rgba(244, 67, 54, 0.05) 100%);
+            border-color: rgba(244, 67, 54, 0.3);
+        }
+
+        .final-grade-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+        }
+
+        .final-grade-value {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #4caf50;
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+
+        .final-grade-section.reprobado .final-grade-value {
+            color: #f44336;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-badge.aprobado {
+            background: rgba(76, 175, 80, 0.25);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.4);
+        }
+
+        .status-badge.reprobado {
+            background: rgba(244, 67, 54, 0.25);
+            color: #e57373;
+            border: 1px solid rgba(244, 67, 54, 0.4);
+        }
+
+        .progress-section {
+            margin-top: 25px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        /* Mensaje de felicitación */
+        .message-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .message-box.excellent {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .message-box.good {
+            background: linear-gradient(135deg, rgba(100, 181, 246, 0.2) 0%, rgba(100, 181, 246, 0.1) 100%);
+            border: 2px solid rgba(100, 181, 246, 0.4);
+        }
+
+        .message-box .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .message-box .title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .message-box.excellent .title {
+            color: #ffd700;
+        }
+
+        .message-box.good .title {
+            color: #64b5f6;
+        }
+
+        .message-box .text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.15);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            color: #e57373;
+        }
+
+        .error-message .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .error-message h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .search-panel, .student-card {
+                padding: 18px;
+            }
+
+            .grades-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .grade-card {
+                padding: 14px;
+            }
+
+            .grade-card .value {
+                font-size: 1.4rem;
+            }
+
+            .final-grade-value {
+                font-size: 3rem;
+            }
+
+            .student-header {
+                gap: 12px;
+            }
+
+            .student-avatar {
+                width: 55px;
+                height: 55px;
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Mejoras específicas para iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            .form-group select,
+            .form-group input[type="text"] {
+                font-size: 16px !important;
+            }
+            
+            select, input {
+                -webkit-appearance: none;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Sistema de Consulta de Calificaciones</h1>
+            <div class="periodo">Período 25-II</div>
+            <div class="profesor">Prof. Edgar Rivero ACE</div>
+        </div>
+
+        <div class="search-panel">
+            <h2>🔍 Consulta tu calificación</h2>
+            
+            <div class="form-group">
+                <label for="semestre">Semestre:</label>
+                <div class="select-wrapper">
+                    <select id="semestre">
+                        <option value="">-- Selecciona el semestre --</option>
+                        <option value="5TO">5TO Semestre</option>
+                        <option value="6TO">6TO Semestre</option>
+                        <option value="8VO">8VO Semestre</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="seccion">Sección:</label>
+                <div class="select-wrapper">
+                    <select id="seccion" disabled>
+                        <option value="">-- Primero selecciona el semestre --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cedula">Número de Cédula:</label>
+                <input type="text" id="cedula" placeholder="Ej: 12345678" inputmode="numeric" pattern="[0-9]*">
+            </div>
+
+            <button class="btn-search" id="btnBuscar">
+                <span>🔎</span> Consultar Calificación
+            </button>
+        </div>
+
+        <div id="resultado" class="result-container"></div>
+
+        <div class="footer">
+            Sistema de Consulta de Calificaciones - Período 25-II<br>
+            Prof. Edgar Rivero ACE
+        </div>
+    </div>
+
+    <script>
+        // Datos de estudiantes
+        const estudiantes = [{"cedula": "31078361", "nombre": "Alvarado Soto, Marian Alejandra", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "27941636", "nombre": "Alvarez Escalante, Einer Alberto", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 0.0, "corte4": 25.0, "acumulado": 75.0, "nota_final": 15}, {"cedula": "30358063", "nombre": "Andueza Nieriz, Brayan Jesus", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 90.0, "nota_final": 18}, {"cedula": "29897892", "nombre": "Arias Agreda, Areanny Stephania", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 15.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "14312644", "nombre": "Bermeo Pereira, Carlos Jose", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30765582", "nombre": "Calzadilla Benavente, Yormaireth Eugenia", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 90.0, "nota_final": 18}, {"cedula": "17313215", "nombre": "Cardona Padron, Edgar Dixon", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 15.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "30512950", "nombre": "Gil La Pietra, Donatella Alejandra", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 15.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "31255620", "nombre": "Gonzalez Guariropa, Andrea Analys", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 10.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "30099972", "nombre": "Hernandez Hernandez, Francheska Valentina", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "28502187", "nombre": "Infante Rojas, Wisbeth Kristel", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 17.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "29989879", "nombre": "Lopez Hidalgo, Paulina Alejandra", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 22.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 87.0, "nota_final": 17}, {"cedula": "27009047", "nombre": "Lovera Alvarez, Greenmar Josangela", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 20.0, "corte2": 20.0, "corte3": 20.0, "corte4": 15.0, "acumulado": 75.0, "nota_final": 15}, {"cedula": "29875158", "nombre": "Marcano Garcia, David Jesus", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 10.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "27294874", "nombre": "Marquez Castillo, Gerson Steven", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "28308843", "nombre": "Mejias Garcia, Leonel David", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 10.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "30124983", "nombre": "Ontiveros Mujica, Carlos Alejandro", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "27606956", "nombre": "Parra Peña, Shetzaly De Los Angeles", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 22.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 87.0, "nota_final": 17}, {"cedula": "17158969", "nombre": "Perez Diaz, Deysi Karelis", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 22.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 87.0, "nota_final": 17}, {"cedula": "29725400", "nombre": "Perez Gonzalez, Fabianna Yuvelin", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 22.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 87.0, "nota_final": 17}, {"cedula": "29619534", "nombre": "Perez Hernandez, Gerimar Juliet", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 22.0, "corte2": 23.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "27713838", "nombre": "Rada Piñango, Richard Wilfredo", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 10.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "30873624", "nombre": "Ramirez Olivero, Moises Jose", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 90.0, "nota_final": 18}, {"cedula": "30429651", "nombre": "Ramirez Romero, Daneska Valentina", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 15.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "29961472", "nombre": "Silva Legon, Ariamnis Noreymi", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 20.0, "corte3": 17.0, "corte4": 25.0, "acumulado": 87.0, "nota_final": 17}, {"cedula": "25219682", "nombre": "Suarez Leon, Carlos Samil", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "25869193", "nombre": "Torres Lascano, Blas Alexander", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 17.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "31160445", "nombre": "Torres Oliveros, Jaiderline Sinai", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 15.0, "corte4": 25.0, "acumulado": 90.0, "nota_final": 18}, {"cedula": "30602475", "nombre": "Urbina Montilla, Juan David", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "18269021", "nombre": "Varela Suarez, Dulcimar Marina", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 10.0, "corte2": 0.0, "corte3": 0.0, "corte4": 0.0, "acumulado": 10.0, "nota_final": 2}, {"cedula": "17557200", "nombre": "Villagomez Moran, Lleixa Joanneth", "semestre": "5TO", "seccion": "J", "unidad": "ARANCEL DE ADUANAS", "semestre_seccion": "5TO J", "corte1": 0.0, "corte2": 0.0, "corte3": 0.0, "corte4": 0.0, "acumulado": 0.0, "nota_final": 1}, {"cedula": "31360238", "nombre": "Aponte Armas, Elgharysk Dhyaleska", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28303145", "nombre": "Ascanio Patiño, Alanis De Los Angeles", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "20001673", "nombre": "Bruzual Torres, Rusbelys Coromoto", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 10.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 80.0, "nota_final": 16}, {"cedula": "30935078", "nombre": "Cabrera Rodriguez, Daniela Mercedes", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30605685", "nombre": "De Requesens Gonzalez, Moises Salomon", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "31703473", "nombre": "Escalona Rodriguez, Kerlin Zarai", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "16564141", "nombre": "Gonzalez Oliveros, Jose Antonio", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30261022", "nombre": "Guedez Soto, Indira Sinai", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30512640", "nombre": "Gutierrez Meza, Oscarli Geraldine", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "29784210", "nombre": "Gutierrez Silva, Brityerder Justin", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30836949", "nombre": "Inojosa Peña, Franyelith Valentina", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "24636819", "nombre": "Mendez Leal, George Luis", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "29677667", "nombre": "Monsalve Gatista, Victor Manuel", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "28339445", "nombre": "Mora Carreño, Gabriel Arley", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 20.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "28761700", "nombre": "Moreno Alfonzo, Barbara Antonieta", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 0.0, "corte2": 0.0, "corte3": 0.0, "corte4": 0.0, "acumulado": 0.0, "nota_final": 1}, {"cedula": "29797472", "nombre": "Nava Gonzalez, Katerine Gabriela", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30670113", "nombre": "Osuna Camacho, Silvani Skarlet", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30793102", "nombre": "Peche Subero, Danna Dakarlie", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "28469073", "nombre": "Pineda Alvarez, Hildemar Gerlyn", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 0.0, "corte2": 0.0, "corte3": 0.0, "corte4": 0.0, "acumulado": 0.0, "nota_final": 1}, {"cedula": "29736152", "nombre": "Rivero Alvarado, Sahomy Del Carmen", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "31403444", "nombre": "Rodríguez Valero, Luisly Nicole", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30678588", "nombre": "Torres Palacios, Paul Jose", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 10.0, "corte4": 10.0, "acumulado": 65.0, "nota_final": 13}, {"cedula": "31454043", "nombre": "Vargas Zambrano, Ariannys Sarahi", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "25740597", "nombre": "Vazquez Olmos, Crismar Del Carmen", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "29828916", "nombre": "Wilches Morales, Yonjairo", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "31228318", "nombre": "Zambrano Castro, Samuel Eduardo", "semestre": "6TO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA I", "semestre_seccion": "6TO I", "corte1": 20.0, "corte2": 22.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 92.0, "nota_final": 18}, {"cedula": "26152006", "nombre": "Alvarez Arcila, Madelyn Felicia", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "24664529", "nombre": "Bastidas, Adriana Zuleisi", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "28149334", "nombre": "Benavides Sanchez, Sophia Andrea", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "25587618", "nombre": "Cardenas Ramirez, Jeniffer Yosany", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30021243", "nombre": "Contreras Sosa, Richerli Dianny", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 10.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "25792171", "nombre": "Diaz Oramas, Jobrailing Yasmit", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30403323", "nombre": "Duarte Caballero, Diego Antonio", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30260860", "nombre": "Garcia Talavera, Marian Rosneisys", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29584820", "nombre": "Garcia Vela, Franklin Ali", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 20.0, "corte2": 20.0, "corte3": 10.0, "corte4": 10.0, "acumulado": 60.0, "nota_final": 12}, {"cedula": "29532542", "nombre": "Gonzalez Barrientos, Geisel Alejandra", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 20.0, "corte2": 20.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "27915713", "nombre": "González Infante , Gisbel Desire", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28116413", "nombre": "Herrera Rondon, Luis Miguel", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "30124683", "nombre": "Laya Garcia, Cinthya Elizabeth", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "24758186", "nombre": "Ledezma Cañizales, Christian Gabriel", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 20.0, "corte2": 20.0, "corte3": 20.0, "corte4": 20.0, "acumulado": 80.0, "nota_final": 16}, {"cedula": "27622366", "nombre": "Marrero Hernandez, Jesús Alberto", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28149256", "nombre": "Martinez Romero, Luisa Fernanda", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 10.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "30930077", "nombre": "Martinez Silvera, Ivanna Daneicy", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29965526", "nombre": "Meneses Luna, Diego Alfonso", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30108330", "nombre": "Montilla Montilla, Ritzabeth Sofia", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "26980126", "nombre": "Ojeda Venta, Carolina Nazareth", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29832434", "nombre": "Ortega De Noronha, Marinell Anyelin", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "31360022", "nombre": "Rivas Portillo, Angellys Sabrina", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "26573427", "nombre": "Rivera Graterol, Luis Enrique", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 20.0, "corte2": 20.0, "corte3": 20.0, "corte4": 15.0, "acumulado": 75.0, "nota_final": 15}, {"cedula": "28481777", "nombre": "Robertson , Santiago Junior", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 17.0, "corte2": 10.0, "corte3": 0.0, "corte4": 25.0, "acumulado": 52.0, "nota_final": 10}, {"cedula": "25385389", "nombre": "Rodriguez Del Castillo, Carlos Eduardo", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30449962", "nombre": "Rojas Marapacuto, Magrey Rosymar", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30259545", "nombre": "Romero Perez, Virgelis Merihelis", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29887161", "nombre": "Salinas Garcia, Adrian Jesus", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 10.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "28311840", "nombre": "Silva Gil, Gabriel Jose", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "24444684", "nombre": "Vitriago Rodriguez, Maria Isabel", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29518474", "nombre": "Vizcaino Neira, Vicnier Alejandro", "semestre": "8VO", "seccion": "I", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO I", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28469710", "nombre": "Alvarez Gonzalez, Karol Nisleivy", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "14852750", "nombre": "Anjoul Gandolfi, Huadia Labibe", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30261464", "nombre": "Arandia Hernandez, Valentina Nazareth", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29731472", "nombre": "Armas Guarino, Laura Valentina", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "27915057", "nombre": "Arocha Medina, Osleivis Patricia", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28143125", "nombre": "Arrivillaga Fonseca, Elian Andres", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30192212", "nombre": "Barroeta Rojas, Estrella De Los Angeles", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "25148491", "nombre": "Benitez Parra, Genesis Katherine", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "18009598", "nombre": "Blanco Blasco, Miguel Angel", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29731056", "nombre": "Corso Sira, Ybrahim Josue", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 20.0, "corte2": 20.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 85.0, "nota_final": 17}, {"cedula": "27472922", "nombre": "Elias Chacon, Marely Dayana", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 20.0, "corte2": 20.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 90.0, "nota_final": 18}, {"cedula": "24964154", "nombre": "Farfan Yari, Jean Carlos", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "27531819", "nombre": "Ferreira De La Cruz, Stephanie Gisselle", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28132873", "nombre": "Goncalves Martinez, Valeria Valentina", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "24899639", "nombre": "Guerrero Gutierrez, Alejandro Jose", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "30188482", "nombre": "Gutierrez Salas, Elvia Mariana", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "18109147", "nombre": "Ibero Lopez, Elizabeth Carolina", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "27752240", "nombre": "Lopez Martinez, Emilianny Catalina", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29743142", "nombre": "Maioli Colina, Yetxer Alexander", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "27713265", "nombre": "Mendoza Garcia, Joel Enrique", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "18269060", "nombre": "Mijares Arcila, Marolgui Amaitaru", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 20.0, "corte2": 20.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 90.0, "nota_final": 18}, {"cedula": "29637071", "nombre": "Mogollón Salas, Magyel Jose", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "26648612", "nombre": "Monterrey Ramirez, Adriana", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 20.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "28073914", "nombre": "Perez Fernandez, Theicha Naiems Morella", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "26040905", "nombre": "Ramos Placencia, Maria Victoria", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "29935661", "nombre": "Rengifo Valera, Daglen Grenaldys", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "28116682", "nombre": "Rodriguez Lozano, Gabriel Ramon", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "19894264", "nombre": "Rojas Diaz, Juan Manuel", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}, {"cedula": "26440490", "nombre": "Salazar Vega, Jorge David", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 20.0, "corte4": 25.0, "acumulado": 95.0, "nota_final": 19}, {"cedula": "24749190", "nombre": "Sánchez Sojo, Meiker Enderson", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 0.0, "corte2": 0.0, "corte3": 0.0, "corte4": 0.0, "acumulado": 0.0, "nota_final": 1}, {"cedula": "27497750", "nombre": "Valiente Rivera, Yesika Maria", "semestre": "8VO", "seccion": "J", "unidad": "TECNICAS DE CLASIFICACION ARANCELARIA III", "semestre_seccion": "8VO J", "corte1": 25.0, "corte2": 25.0, "corte3": 25.0, "corte4": 25.0, "acumulado": 100.0, "nota_final": 20}];
+
+        // Secciones por semestre
+        const seccionesPorSemestre = {
+            '5TO': ['J'],
+            '6TO': ['I'],
+            '8VO': ['I', 'J']
+        };
+
+        // Referencias a elementos
+        const semestreSelect = document.getElementById('semestre');
+        const seccionSelect = document.getElementById('seccion');
+        const cedulaInput = document.getElementById('cedula');
+        const btnBuscar = document.getElementById('btnBuscar');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Event listeners
+        semestreSelect.addEventListener('change', actualizarSecciones);
+        btnBuscar.addEventListener('click', buscarNotas);
+        
+        // También buscar al presionar Enter en el campo de cédula
+        cedulaInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarNotas();
+            }
+        });
+
+        function actualizarSecciones() {
+            const semestre = semestreSelect.value;
+            seccionSelect.innerHTML = '';
+            
+            if (!semestre) {
+                seccionSelect.innerHTML = '<option value="">-- Primero selecciona el semestre --</option>';
+                seccionSelect.disabled = true;
+                return;
+            }
+            
+            const secciones = seccionesPorSemestre[semestre] || [];
+            
+            if (secciones.length === 1) {
+                // Si solo hay una sección, seleccionarla automáticamente
+                seccionSelect.innerHTML = '<option value="' + secciones[0] + '">Sección ' + secciones[0] + '</option>';
+            } else {
+                seccionSelect.innerHTML = '<option value="">-- Selecciona la sección --</option>';
+                secciones.forEach(function(sec) {
+                    const option = document.createElement('option');
+                    option.value = sec;
+                    option.textContent = 'Sección ' + sec;
+                    seccionSelect.appendChild(option);
+                });
+            }
+            
+            seccionSelect.disabled = false;
+        }
+
+        function buscarNotas() {
+            const semestre = semestreSelect.value;
+            const seccion = seccionSelect.value;
+            const cedula = cedulaInput.value.trim().replace(/\D/g, '');
+            
+            // Validaciones
+            if (!semestre) {
+                mostrarError('Por favor, selecciona el semestre.');
+                return;
+            }
+            
+            if (!seccion) {
+                mostrarError('Por favor, selecciona la sección.');
+                return;
+            }
+            
+            if (!cedula) {
+                mostrarError('Por favor, ingresa tu número de cédula.');
+                return;
+            }
+            
+            // Buscar estudiante
+            const estudiante = estudiantes.find(function(e) {
+                return e.cedula === cedula && 
+                       e.semestre === semestre && 
+                       e.seccion === seccion;
+            });
+            
+            if (!estudiante) {
+                mostrarError('No se encontró un estudiante con la cédula ' + cedula + ' en ' + semestre + ' ' + seccion + '. Verifica los datos ingresados.');
+                return;
+            }
+            
+            mostrarResultado(estudiante);
+        }
+
+        function mostrarError(mensaje) {
+            resultadoDiv.innerHTML = 
+                '<div class="error-message">' +
+                    '<div class="icon">😕</div>' +
+                    '<h3>No encontrado</h3>' +
+                    '<p>' + mensaje + '</p>' +
+                '</div>';
+            resultadoDiv.classList.add('show');
+        }
+
+        function mostrarResultado(est) {
+            const inicial = est.nombre.charAt(0).toUpperCase();
+            const aprobado = est.nota_final >= 10;
+            const statusClass = aprobado ? 'aprobado' : 'reprobado';
+            const statusText = aprobado ? 'APROBADO' : 'REPROBADO';
+            const gradeClass = aprobado ? '' : 'reprobado';
+            
+            // Generar mensaje de felicitación
+            let mensajeHTML = '';
+            if (est.nota_final >= 18 && est.nota_final <= 20) {
+                mensajeHTML = 
+                    '<div class="message-box excellent">' +
+                        '<div class="emoji">🏆🌟</div>' +
+                        '<div class="title">¡Excelente Desempeño!</div>' +
+                        '<div class="text">¡Felicitaciones! Has demostrado un nivel de excelencia académica sobresaliente. Tu dedicación y esfuerzo son un ejemplo a seguir. ¡Sigue así!</div>' +
+                    '</div>';
+            } else if (est.nota_final >= 15 && est.nota_final <= 17) {
+                mensajeHTML = 
+                    '<div class="message-box good">' +
+                        '<div class="emoji">👏💪</div>' +
+                        '<div class="title">¡Buen Trabajo!</div>' +
+                        '<div class="text">Has logrado un buen rendimiento académico. Con un poco más de esfuerzo podrás alcanzar la excelencia. ¡Tú puedes llegar más alto!</div>' +
+                    '</div>';
+            }
+            
+            resultadoDiv.innerHTML = 
+                '<div class="student-card">' +
+                    '<div class="student-header">' +
+                        '<div class="student-avatar">' + inicial + '</div>' +
+                        '<div class="student-info">' +
+                            '<h3>' + est.nombre + '</h3>' +
+                            '<p>C.I.: ' + est.cedula + ' | ' + est.semestre_seccion + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div class="course-name">' +
+                        '<span>📖 ' + est.unidad + '</span>' +
+                    '</div>' +
+                    
+                    '<div class="grades-grid">' +
+                        '<div class="grade-card">' +
+                            '<div class="label">1er Corte</div>' +
+                            '<div class="value">' + est.corte1 + '</div>' +
+                            '<div class="max">/ 25 pts</div>' +
+                        '</div>' +
+                        '<div class="grade-card">' +
+                            '<div class="label">2do Corte</div>' +
+                            '<div class="value">' + est.corte2 + '</div>' +
+                            '<div class="max">/ 25 pts</div>' +
+                        '</div>' +
+                        '<div class="grade-card">' +
+                            '<div class="label">3er Corte</div>' +
+                            '<div class="value">' + est.corte3 + '</div>' +
+                            '<div class="max">/ 25 pts</div>' +
+                        '</div>' +
+                        '<div class="grade-card">' +
+                            '<div class="label">4to Corte</div>' +
+                            '<div class="value">' + est.corte4 + '</div>' +
+                            '<div class="max">/ 25 pts</div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div class="final-grade-section ' + gradeClass + '">' +
+                        '<div class="final-grade-label">Calificación Final</div>' +
+                        '<div class="final-grade-value">' + est.nota_final + '</div>' +
+                        '<span class="status-badge ' + statusClass + '">' + statusText + '</span>' +
+                    '</div>' +
+                    
+                    '<div class="progress-section">' +
+                        '<div class="progress-header">' +
+                            '<span>Puntos acumulados</span>' +
+                            '<span>' + est.acumulado + ' / 100 pts</span>' +
+                        '</div>' +
+                        '<div class="progress-bar">' +
+                            '<div class="progress-fill" style="width: ' + est.acumulado + '%"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    mensajeHTML +
+                '</div>';
+            
+            resultadoDiv.classList.add('show');
+            
+            // Scroll suave al resultado
+            setTimeout(function() {
+                resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
